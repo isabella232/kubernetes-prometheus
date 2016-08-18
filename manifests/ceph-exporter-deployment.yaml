@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ceph-exporter
+  annotations:
+    prometheus.io/scrape: 'true'
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ceph-exporter
+    spec:
+      containers:
+      - name: ceph-exporter
+        image: quay.io/acaleph/ceph_exporter:latest
+        ports:
+          - name: ceph-exporter
+            containerPort: 9128
+            hostPort: 9128
+        volumeMounts:
+          - name: ceph-conf
+            mountPath: /etc/ceph
+            readOnly: true
+      volumes:
+      - name: ceph-conf
+        secret:
+          secretName: ceph-conf-combined
